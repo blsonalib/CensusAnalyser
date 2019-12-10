@@ -10,7 +10,7 @@ public class CensusAnalyserTest {
     private static final String INDIA_CENSUS_CSV_FILE_PATH = "./src/test/resources/IndiaStateCensusData.csv";
     private static final String WRONG_CSV_FILE_PATH = "./src/main/resources/IndiaStateCensusData.csv";
     private static final String INDIA_StateCode_CSV_FILE_PATH = "./src/test/resources/IndiaStateCode.csv";
-
+    private static final String INDIA_CENSUS_CSV_FILE_PATH_FOR_DELIMETER="/home/admin1/IdeaProjects/CensusAnalyser/src/test/resources/IndiaStateCensusDataForDelimeter.csv";
     @Test
     public void givenIndianCensusCSVFileReturnsCorrectRecords() {
         try {
@@ -40,6 +40,18 @@ public class CensusAnalyserTest {
             numOfStateCode = censusAnalyser.loadIndiaStateCode(INDIA_StateCode_CSV_FILE_PATH );
         } catch (CensusAnalyserException e) {
             Assert.assertEquals(37,numOfStateCode);
+        }
+    }
+
+    @Test
+    public void givenMessage_WhenWrongDelimer_InStateCensus_ShouldThrowRunTimeException() {
+        try {
+            CensusAnalyser censusAnalyser = new CensusAnalyser();
+            ExpectedException exceptionRule = ExpectedException.none();
+            exceptionRule.expect(CensusAnalyserException.class);
+            censusAnalyser.loadIndiaCensusData(INDIA_CENSUS_CSV_FILE_PATH_FOR_DELIMETER);
+        } catch (CensusAnalyserException e) {
+            Assert.assertEquals(CensusAnalyserException.ExceptionType.DATA_NOT_FOUND,e.type);
         }
     }
 
