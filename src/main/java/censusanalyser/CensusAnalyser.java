@@ -53,7 +53,7 @@ public class CensusAnalyser {
                     e.type.name());
         }catch (RuntimeException e){
             throw new CensusAnalyserException(e.getMessage(),
-                    CensusAnalyserException.ExceptionType.DATA_NOT_FOUND);
+                    CensusAnalyserException.ExceptionType.ISSUE_IN_FILE);
         }
     }
     private <E> int getCount(Iterator<E>iterator){
