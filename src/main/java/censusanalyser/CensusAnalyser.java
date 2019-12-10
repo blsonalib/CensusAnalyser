@@ -34,6 +34,9 @@ public class CensusAnalyser {
         } catch (CSVBuilderException e) {
             throw new CensusAnalyserException(e.getMessage(),
                     e.type.name());
+        }catch (RuntimeException e){
+            throw new CensusAnalyserException(e.getMessage(),
+                    CensusAnalyserException.ExceptionType.DATA_NOT_FOUND);
         }
     }
 
@@ -48,7 +51,9 @@ public class CensusAnalyser {
         } catch (CSVBuilderException e) {
             throw new CensusAnalyserException(e.getMessage(),
                     e.type.name());
-
+        }catch (RuntimeException e){
+            throw new CensusAnalyserException(e.getMessage(),
+                    CensusAnalyserException.ExceptionType.DATA_NOT_FOUND);
         }
     }
     private <E> int getCount(Iterator<E>iterator){
