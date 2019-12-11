@@ -1,11 +1,12 @@
 package censusanalyser;
 
-public class IndiaCensusDAO {
+class IndiaCensusDAO {
 
+    public String state;
+    public String stateCode;
     public int population;
     public int densityPerSqKm;
     public int areaInSqKm;
-    public String state;
 
     public IndiaCensusDAO(IndiaCensusCSV indiaCensusCSV){
         state=indiaCensusCSV.state;
