@@ -13,6 +13,7 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 
+/*
 public class CommonCSVBuilder<E> implements ICSVBuilder {
     @Override
     public Iterator<E> getCSVFileIterator(Reader reader, Class csvClass) throws CSVBuilderException {
@@ -38,4 +39,4 @@ public class CommonCSVBuilder<E> implements ICSVBuilder {
             throw new CSVBuilderException(e.getMessage(), CSVBuilderException.ExceptionType.UNABLE_TO_PARSE);
         }
     }
-}
+}*/

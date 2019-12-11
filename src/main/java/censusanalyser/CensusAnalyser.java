@@ -1,5 +1,8 @@
 package censusanalyser;
 
+import com.bridgelabz.censusanalyser.CSVBuilderException;
+import com.bridgelabz.censusanalyser.CSVBuilderFactory;
+import com.bridgelabz.censusanalyser.ICSVBuilder;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -33,7 +36,7 @@ public class CensusAnalyser {
                     CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
         } catch (CSVBuilderException e) {
             throw new CensusAnalyserException(e.getMessage(),
-                    e.type.name());
+                    CensusAnalyserException.ExceptionType.UNABLE_TO_PARSE);
         } catch (RuntimeException e) {
             throw new CensusAnalyserException(e.getMessage(),
                     CensusAnalyserException.ExceptionType.ISSUE_IN_FILE);
@@ -56,17 +59,11 @@ public class CensusAnalyser {
                     CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
         } catch (CSVBuilderException e) {
             throw new CensusAnalyserException(e.getMessage(),
-                    e.type.name());
+                CensusAnalyserException.ExceptionType.UNABLE_TO_PARSE);
         } catch (RuntimeException e) {
             throw new CensusAnalyserException(e.getMessage(),
                     CensusAnalyserException.ExceptionType.ISSUE_IN_FILE);
         }
-    }
-
-    private <E> int getCount(Iterator<E> iterator) {
-        Iterable<E> csvIterable = () -> iterator;
-        int namOfEateries = (int) StreamSupport.stream(csvIterable.spliterator(), false).count();
-        return namOfEateries;
     }
 
     public String getStateWiseSortedCensusData(String csvFilePath) throws CensusAnalyserException {
@@ -80,7 +77,6 @@ public class CensusAnalyser {
         String sortedStateCensusJson = new Gson().toJson(censusDAOS);
         return sortedStateCensusJson;
     }
-
 
     private void sort(List<IndiaCensusDAO> censusDAOS, Comparator<IndiaCensusDAO> censusComparator) {
         for (int i = 0; i < censusDAOS.size() - 1; i++) {
