@@ -17,18 +17,29 @@ public class CensusAnalyser {
 
     Map<String, CensusDAO> censusStateMap = null;
 
-    public CensusAnalyser() {
+    public CensusAnalyser() throws CensusAnalyserException {
         this.censusStateMap = new HashMap<>();
     }
 
     public int loadIndiaCensusData(String csvFilePath) throws CensusAnalyserException {
+        return this.loadCensusData(csvFilePath, IndiaCensusCSV.class);
+    }
+
+    private <E> int loadCensusData(String csvFilePath, Class<E> censusCSVClass) throws CensusAnalyserException {
         try (Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
             ICSVBuilder csvbuilder = CSVBuilderFactory.createCsvbuilder();
-            Iterator<IndiaCensusCSV> csvIterator = csvbuilder.getCSVFileIterator(reader, IndiaCensusCSV.class);
-            Iterable<IndiaCensusCSV> csvIterable = () -> csvIterator;
-            StreamSupport.stream(csvIterable.spliterator(), false).
-                    forEach(censusCsv -> censusStateMap.put(censusCsv.state, new CensusDAO(censusCsv)));
-
+            Iterator<E> csvIterator = csvbuilder.getCSVFileIterator(reader, censusCSVClass);
+            Iterable<E> csvIterable = () -> csvIterator;
+            if(censusCSVClass.getName().equals("censusanalyser.IndiaCensusCSV")) {
+                StreamSupport.stream(csvIterable.spliterator(), false)
+                        .map(IndiaCensusCSV.class::cast)
+                        .forEach(censusCsv -> censusStateMap.put(censusCsv.state, new CensusDAO(censusCsv)));
+            }
+           else if(censusCSVClass.getName().equals("censusanalyser.USCensusCSV")) {
+                StreamSupport.stream(csvIterable.spliterator(), false)
+                        .map(IndiaCensusCSV.class::cast)
+                        .forEach(censusCsv -> censusStateMap.put(censusCsv.state, new CensusDAO(censusCsv)));
+            }
             return censusStateMap.size();
         } catch (IOException e) {
             throw new CensusAnalyserException(e.getMessage(),
@@ -62,6 +73,7 @@ public class CensusAnalyser {
                     CensusAnalyserException.ExceptionType.ISSUE_IN_FILE);
         }
     }
+
     public int loadUsCensusData(String csvFilePath) throws CensusAnalyserException {
         try (Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
             ICSVBuilder csvbuilder = CSVBuilderFactory.createCsvbuilder();
