@@ -10,7 +10,6 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -47,30 +46,28 @@ public class CensusAnalyser {
         try (Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
             ICSVBuilder csvbuilder = CSVBuilderFactory.createCsvbuilder();
             Iterator<IndiaStateCodeCSV> stateCSVIterator = csvbuilder.getCSVFileIterator(reader, IndiaStateCodeCSV.class);
-            while (stateCSVIterator.hasNext()) {
-                IndiaStateCodeCSV stateCSV = stateCSVIterator.next();
-                IndiaCensusDAO censusDAO = censusStateMap.get(stateCSV.stateName);
-                if (censusDAO == null) continue;
-                censusDAO.stateCode = stateCSV.stateCode;
-            }
+            Iterable<IndiaStateCodeCSV> csvIterable = () -> stateCSVIterator;
+            StreamSupport.stream(csvIterable.spliterator(), false).
+                    filter(csvState -> censusStateMap.get(csvState.stateName) != null).
+                    forEach(csvState -> censusStateMap.get(csvState.stateName).stateCode = csvState.stateName);
             return censusStateMap.size();
         } catch (IOException e) {
             throw new CensusAnalyserException(e.getMessage(),
                     CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
         } catch (CSVBuilderException e) {
             throw new CensusAnalyserException(e.getMessage(),
-                CensusAnalyserException.ExceptionType.UNABLE_TO_PARSE);
+                    CensusAnalyserException.ExceptionType.UNABLE_TO_PARSE);
         } catch (RuntimeException e) {
             throw new CensusAnalyserException(e.getMessage(),
                     CensusAnalyserException.ExceptionType.ISSUE_IN_FILE);
         }
     }
 
-    public String getStateWiseSortedCensusData(String csvFilePath) throws CensusAnalyserException {
+    public String getStateWiseSortedCensusData(SortedField.Field field) throws CensusAnalyserException {
         if (censusStateMap == null || censusStateMap.size() == 0) {
             throw new CensusAnalyserException("No Census Data", CensusAnalyserException.ExceptionType.NO_CENCUS_DATA);
         }
-        Comparator<IndiaCensusDAO> censusComparator = Comparator.comparing(census -> census.state);
+        Comparator<IndiaCensusDAO> censusComparator = SortedField.getField(field);
         List<IndiaCensusDAO> censusDAOS = censusStateMap.values().stream().
                 collect(Collectors.toList());
         this.sort(censusDAOS, censusComparator);
