@@ -16,6 +16,7 @@ public class CensusAnalyserTest {
     private static final String INDIA_STATECODE_CSV_FILE_PATH_FOR_DELIMETER = "/home/admin1/IdeaProjects/CensusAnalyser/src/test/resources/IndiaStateCodeForDelimeter.csv";
     private static final String INDIA_STATECODE_CSV_FILE_PATH_FOR_HEADER = "/home/admin1/IdeaProjects/CensusAnalyser/src/test/resources/IndiaStateCodeForHeader.csv";
     private static final String US_CENSUS_PATH = "/home/admin1/IdeaProjects/CensusAnalyser/src/test/resources/USCensusData.csv";
+    private static final String US_CENSUS_PATH_FOR_WRONG_DELIMETER="/home/admin1/IdeaProjects/CensusAnalyser/src/test/resources/USCensusDataForWrongDelimeter.csv";
 
     @Test
     public void givenUSCensusData_ReturnsCorrectRecords() {
@@ -176,5 +177,17 @@ public class CensusAnalyserTest {
         CensusAnalyser censusAnalyser = new CensusAnalyser(CensusAnalyser.Country.US);
         int count = censusAnalyser.loadCensusData(CensusAnalyser.Country.US, US_CENSUS_PATH);
         Assert.assertEquals(51, count);
+    }
+
+    @Test
+    public void givenUSCensusData_WhenWrongDelimeter_ShouldReturnThrowException() {
+        try {
+            CensusAnalyser censusAnalyser = new CensusAnalyser(CensusAnalyser.Country.US);
+            ExpectedException exceptionRule = ExpectedException.none();
+            exceptionRule.expect(CensusAnalyserException.class);
+            censusAnalyser.loadCensusData(CensusAnalyser.Country.US,US_CENSUS_PATH_FOR_WRONG_DELIMETER);
+        } catch (CensusAnalyserException e) {
+            Assert.assertEquals(CensusAnalyserException.ExceptionType.ISSUE_IN_FILE, e.type);
+        }
     }
 }
