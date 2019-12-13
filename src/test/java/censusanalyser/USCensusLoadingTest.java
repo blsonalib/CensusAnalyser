@@ -14,10 +14,10 @@ public class USCensusLoadingTest {
 
 
     @Test
-    public void givenIndianCensusCSVFile_ReturnsCorrectRecordsOfUSCensusData()  throws CensusAnalyserException {
-        CensusAdapter censusAdapter=new USCensusAdapter();
-        Map<String,CensusDAO> records=censusAdapter.loadCensusData(US_CENSUS_PATH);
-        Assert.assertEquals(51,records.size());
+    public void givenIndianCensusCSVFile_ReturnsCorrectRecordsOfUSCensusData() throws CensusAnalyserException {
+        CensusAdapter censusAdapter = new USCensusAdapter();
+        Map<String, CensusDAO> records = censusAdapter.loadCensusData(US_CENSUS_PATH);
+        Assert.assertEquals(51, records.size());
     }
 
     @Test
@@ -26,7 +26,19 @@ public class USCensusLoadingTest {
             CensusAdapter indiaCensusAdapter = new IndiaCensusAdapter();
             ExpectedException exceptionRule = ExpectedException.none();
             exceptionRule.expect(CensusAnalyserException.class);
-            indiaCensusAdapter.loadCensusData( US_CENSUS_PATH_FOR_WRONG_DELIMETER);
+            indiaCensusAdapter.loadCensusData(US_CENSUS_PATH_FOR_WRONG_DELIMETER);
+        } catch (CensusAnalyserException e) {
+            Assert.assertEquals(CensusAnalyserException.ExceptionType.ISSUE_IN_FILE, e.type);
+        }
+    }
+
+    @Test
+    public void USCensusData_WithoutHeader_ShouldReturnThrowException() {
+        try {
+            CensusAdapter indiaCensusAdapter = new IndiaCensusAdapter();
+            ExpectedException exceptionRule = ExpectedException.none();
+            exceptionRule.expect(CensusAnalyserException.class);
+            indiaCensusAdapter.loadCensusData(US_CENSUS_PATH_WITHOUT_HEADER);
         } catch (CensusAnalyserException e) {
             Assert.assertEquals(CensusAnalyserException.ExceptionType.ISSUE_IN_FILE, e.type);
         }
