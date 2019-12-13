@@ -68,4 +68,16 @@ public class IndiaCensusLoadingTest {
             Assert.assertEquals(CensusAnalyserException.ExceptionType.ISSUE_IN_FILE, e.type);
         }
     }
+
+    @Test
+    public void givenIndiaStateCode_WhenWrongDelimeter_ShouldReturnThrowException() {
+        try {
+            CensusAdapter indiaCensusAdapter = new IndiaCensusAdapter();
+            ExpectedException exceptionRule = ExpectedException.none();
+            exceptionRule.expect(CensusAnalyserException.class);
+            indiaCensusAdapter.loadCensusData( INDIA_STATECODE_CSV_FILE_PATH_FOR_DELIMETER);
+        } catch (CensusAnalyserException e) {
+            Assert.assertEquals(CensusAnalyserException.ExceptionType.ISSUE_IN_FILE, e.type);
+        }
+    }
 }
