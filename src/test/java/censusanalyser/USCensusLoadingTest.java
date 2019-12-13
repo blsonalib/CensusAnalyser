@@ -33,7 +33,7 @@ public class USCensusLoadingTest {
     }
 
     @Test
-    public void USCensusData_WithoutHeader_ShouldReturnThrowException() {
+    public void givenUSCensusData_WithoutHeader_ShouldReturnThrowException() {
         try {
             CensusAdapter indiaCensusAdapter = new IndiaCensusAdapter();
             ExpectedException exceptionRule = ExpectedException.none();
@@ -55,5 +55,4 @@ public class USCensusLoadingTest {
             Assert.assertEquals(CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM, e.type);
         }
     }
-
 }
