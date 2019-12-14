@@ -1,5 +1,7 @@
 package censusanalyser;
+
 import com.google.gson.Gson;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,11 +23,16 @@ public class CensusAnalyser {
         return censusStateMap.size();
     }
 
-    public String getStateWiseSortedCensusData(SortedField.Field field) throws CensusAnalyserException {
+    public String getStateWiseSortedCensusData(SortedField.Field... field) throws CensusAnalyserException {
         if (censusStateMap == null || censusStateMap.size() == 0) {
             throw new CensusAnalyserException("No Census data", CensusAnalyserException.ExceptionType.No_CENSUS_DATA);
         }
-        Comparator<CensusDAO> censusCSVComparator = SortedField.getField(field);
+        Comparator<CensusDAO> censusCSVComparator = null;
+        if (field.length == 2) {
+            censusCSVComparator = SortedField.getField(field[0]).thenComparing(SortedField.getField(field[1]));
+        } else {
+            censusCSVComparator = SortedField.getField(field[0]);
+        }
         ArrayList censusDAOS = censusStateMap.values().stream().
                 sorted(censusCSVComparator).
                 map(censusDAO -> censusDAO.getCensusDTO(country)).
@@ -33,19 +40,5 @@ public class CensusAnalyser {
         String sortedStateCensusJson = new Gson().toJson(censusDAOS);
         return sortedStateCensusJson;
     }
-
-    public String getStateWiseSortedByTwoField(SortedField.Field field,SortedField.Field field2) throws CensusAnalyserException {
-        if (censusStateMap == null || censusStateMap.size() == 0) {
-            throw new CensusAnalyserException("No Census data", CensusAnalyserException.ExceptionType.No_CENSUS_DATA);
-        }
-        Comparator<CensusDAO> censusCSVComparator = SortedField.getField(field).thenComparing(SortedField.getField(field2));
-        ArrayList censusDAOS = censusStateMap.values().stream().
-                sorted(censusCSVComparator).
-                map(censusDAO -> censusDAO.getCensusDTO(country)).
-                collect(Collectors.toCollection(ArrayList::new));
-        String sortedStateCensusJson = new Gson().toJson(censusDAOS);
-        return sortedStateCensusJson;
-    }
-
 }
 
